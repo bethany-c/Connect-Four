@@ -1,0 +1,949 @@
+module board(
+	input resetn,resetb,clk,
+	input r_a,r_b,r_c,r_d,r_e,r_f,r_g, //Red Player - Enable Signals - If user has inputted where piece is dropped
+	input y_a,y_b,y_c,y_d,y_e,y_f,y_g,//Yellow Player - Enable Signals - If user has inputted where piece is dropped
+	input c_a,c_b,c_c,c_d,c_e,c_f,c_g,//Column Enable - Enable Signals - If there is something in a column
+
+
+	output [7:0] column,//7 Columns - Starting at[1]
+	output [6:0] row, //6 Rows - Starting at[1]
+	//output [7:0] colour,
+	output [41:0] redBoard,//All positions on GameBoard for Red - Board State for Red
+	output [41:0] yellowBoard,  //All positions on GameBoard for Yellow - Board State for Yellow
+	output reg [5:0] boardcounter);//6 Bits - 42 Positions
+	
+	//Counter for 7 columns - Represents Filled Positions
+	//3 Bits - Min Number is 0 & Max Number is 5
+	reg[2:0]counterA;
+	reg[2:0]counterB;
+	reg[2:0]counterC;
+	reg[2:0]counterD;
+	reg[2:0]counterE;
+	reg[2:0]counterF;
+	reg[2:0]counterG;
+
+	//Register for Column and Row Coordinates
+	reg [7:0]colLocation;
+	reg [6:0]rowLocation;
+	reg [7:0]outcolour;
+	//reg describing board for each colour
+	reg [41:0] red; //register for red board state
+	reg [41:0] yellow;//Register for the Yellow Board State
+	reg [41:0] combined;
+	reg spotFull;
+
+	//Registers for Columns (Position) - Starting with LHS
+	//Each Position Square is 16x16 px
+	//register for colA
+	always @(posedge clk)
+	begin
+		if (!resetn)
+		begin
+			colLocation <= 0;
+			rowLocation <= 0;
+			outcolour <= 0;
+			counterA <= 0;
+			counterB <= 0;
+			counterC <= 0;
+			counterD <= 0;
+			counterE <= 0;
+			counterF <= 0;
+			counterG <= 0;
+			red <= 0;
+			yellow <= 0;
+			combined <= 0;
+			boardcounter <= 0;
+			spotFull <= 0;
+		end
+		else if(!resetb)
+		begin
+			colLocation <= 0;
+			rowLocation <= 0;
+			outcolour <= 0;
+			counterA <= 0;
+			counterB <= 0;
+			counterC <= 0;
+			counterD <= 0;
+			counterE <= 0;
+			counterF <= 0;
+			counterG <= 0;
+			red <= 0;
+			combined <= 0;
+			yellow <= 0;
+			boardcounter <= 0;
+			spotFull <= 0;
+		end
+	//Column 1 - Red - Changed
+		else if (r_a)
+		begin
+			if (counterA <= 5)//Number of Rows in a Column - If Full Keep Position
+			begin
+				case(counterA[2:0])
+				
+				3'b000://Row 0 - BottomMost
+				begin
+					colLocation <= 8'd26;
+					rowLocation <= 7'd92;
+					red[0] <= 1'b1;
+					combined[0] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001: //row1
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd76;
+					red[7]<=1'b1;
+					combined[7] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010://row2
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd60;
+					red[14]<=1'b1;
+					combined[14] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011://row3
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd44;
+					red[21]<=1'b1;
+					combined[21] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100: //row4
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd28;
+					red[28]<=1'b1;
+					combined[28] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101: //row5 - topmost
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd12;
+					red[35]<=1'b1;
+					combined[35] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//Column 1 - Yellow
+		else if (y_a)
+		begin
+			if (counterA<=5) //Number of Rows in a Column
+			begin
+				case(counterA[2:0])
+				
+				3'b000: //row0
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd92;
+					yellow[0]<=1'b1;
+					combined[0] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001: //row1
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd76;
+					yellow[7]<=1'b1;
+					combined[7] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010: //row2
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd60;
+					yellow[14]<=1'b1;
+					combined[14] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011: //row3
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd44;
+					yellow[21]<=1'b1;
+					combined[21] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100: //row4
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd28;
+					yellow[28]<=1'b1;
+					combined[28] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101: //row5
+				begin
+					colLocation<=8'd26;
+					rowLocation<=7'd12;
+					yellow[35]<=1'b1;
+					combined[35] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end	
+		end
+		//end for COLA
+		//register for colB		
+		else if (r_b)
+		begin
+			if (counterB<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterB[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd92;
+					red[1]<=1'b1;
+					combined[1] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd76;
+					red[8]<=1'b1;
+					combined[8] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd60;
+					red[15]<=1'b1;
+					combined[15] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:begin
+					colLocation<=8'd42;
+					rowLocation<=7'd44;
+					red[22]<=1'b1;
+					combined[22] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd28;
+					red[29]<=1'b1;
+					combined[29] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd12;
+					red[36]<=1'b1;
+					combined[36] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		else if (y_b)
+		begin
+			if (counterB<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterB[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd92;
+					yellow[1]<=1'b1;//changed
+					combined[1] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd76;
+					yellow[8]<=1'b1;
+					combined[8] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd60;
+					yellow[15]<=1'b1;
+					combined[15] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd44;
+					yellow[22]<=1'b1;
+					combined[22] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+					3'b100:
+					begin
+					colLocation<=8'd42;
+					rowLocation<=7'd28;
+					yellow[29]<=1'b1;
+					combined[29] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd42;
+					rowLocation<=7'd12;
+					yellow[36]<=1'b1;
+					combined[36] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//end for COLB
+		//register for colC	
+		else if (r_c)
+		begin
+			if (counterC<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterC[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd92;
+					red[2]<=1'b1;
+					combined[2] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd76;
+					red[9]<=1'b1;
+					combined[9] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd60;
+					red[16]<=1'b1;
+					combined[16] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd44;
+					red[23]<=1'b1;
+					combined[23] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd28;
+					red[30]<=1'b1;
+					combined[30] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd12;
+					red[37]<=1'b1;
+					combined[37] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		else if (y_c)
+		begin
+			if (counterC<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterC[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd92;
+					yellow[2]<=1'b1;
+					combined[2] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd76;
+					yellow[9]<=1'b1;
+					combined[9] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd60;
+					yellow[16]<=1'b1;
+					combined[16] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd44;
+					yellow[23]<=1'b1;
+					combined[23] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd28;
+					yellow[30]<=1'b1;
+					combined[30] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd58;
+					rowLocation<=7'd12;
+					yellow[37]<=1'b1;
+					combined[37] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//end for COLC
+		//register for colD
+		else if (r_d)
+		begin
+			if (counterD<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterD[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd92;
+					red[3]<=1'b1;
+					combined[3] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd76;
+					red[10]<=1'b1;
+					combined[10] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd60;
+					red[17]<=1'b1;
+					combined[17] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd44;
+					red[24]<=1'b1;
+					combined[24] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd28;
+					red[31]<=1'b1;
+					combined[31] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd12;
+					red[38]<=1'b1;
+					combined[38] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		else if (y_d)
+		begin
+			if (counterD<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterD[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd92;
+					yellow[3]<=1'b1;
+					combined[3] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd76;
+					yellow[10]<=1'b1;
+					combined[10] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd60;
+					yellow[17]<=1'b1;
+					combined[17] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd44;
+					yellow[24]<=1'b1;
+					combined[24] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd28;
+					yellow[31]<=1'b1;
+					combined[31] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd74;
+					rowLocation<=7'd12;
+					yellow[38]<=1'b1;
+					combined[38] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//end of COLD
+		//register for colE
+		else if (r_e)
+		begin
+			if (counterE<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterE[2:0])
+					3'b000:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd92;
+						red[4]<=1'b1;
+						combined[4] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					3'b001:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd76;
+						red[11]<=1'b1;
+						combined[11] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					3'b010:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd60;
+						red[18]<=1'b1;
+						combined[18] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					3'b011:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd44;
+						red[25]<=1'b1;
+						combined[25] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					3'b100:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd28;
+						red[32]<=1'b1;
+						combined[32] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					3'b101:
+					begin
+						colLocation<=8'd90;
+						rowLocation<=7'd12;
+						red[39]<=1'b1;
+						combined[39] <= 1'b1;
+						boardcounter <= boardcounter +1;
+					end
+					endcase
+			end
+		end
+		else if (y_e)
+		begin
+			if (counterE<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterE[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd92;
+					yellow[4]<=1'b1;
+					combined[4] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd76;
+					yellow[11]<=1'b1;
+					combined[11] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd60;
+					yellow[18]<=1'b1;
+					combined[18] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd44;
+					yellow[25]<=1'b1;
+					combined[25] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd28;
+					yellow[32]<=1'b1;
+					combined[32] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd90;
+					rowLocation<=7'd12;
+					yellow[39]<=1'b1;
+					combined[39] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//end of COLE
+		//register for colF
+		else if (r_f)
+		begin
+			if (counterF<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterF[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd92;
+					red[5]<=1'b1;
+					combined[5] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd76;
+					red[12]<=1'b1;
+					combined[12] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd60;
+					red[19]<=1'b1;
+					combined[19] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd44;
+					red[26]=1'b1;
+					combined[26] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd28;
+					red[33]=1'b1;
+					combined[33] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd12;
+					red[40]<=1'b1;
+					combined[40] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		else if (y_f)
+		begin
+			if (counterF<=5)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterF[2:0])
+				3'b000:begin
+					colLocation<=8'd106;
+					rowLocation<=7'd92;
+					yellow[5]<=1'b1;
+					combined[5] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				//change back
+				3'b001:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd76;
+					yellow[12]<=1'b1;
+					combined[12] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd60;
+					yellow[19]<=1'b1;
+					combined[19] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd44;
+					yellow[26]<=1'b1;
+					combined[26] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd28;
+					yellow[33]<=1'b1;
+					combined[33] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd106;
+					rowLocation<=7'd12;
+					yellow[40]<=1'b1;
+					combined[40] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				endcase
+			end
+		end
+		//end of COLF
+		//register for colG
+		else if (r_g)begin
+			if (counterG<=3'd5 || boardcounter != 6'd43 || spotFull != 1'b1)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterG[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd92;
+					red[6]<=1'b1;
+					combined[6] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd76;
+					red[13]<=1'b1;
+					combined[13] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd60;
+					red[20]<=1'b1;
+					combined[20] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd44;
+					red[27]<=1'b1;
+					combined[27] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd28;
+					red[34]<=1'b1;
+					combined[34] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd12;
+					red[41]<=1'b1;
+					combined[41] <= 1'b1;
+					boardcounter <= boardcounter +1;
+					spotFull<=1'b1;
+				end
+				endcase
+			end
+		end
+		else if (y_g)
+		begin
+			if (counterG<=3'd5 || boardcounter != 6'd43 || spotFull != 1'b1)
+			begin//case statement to update red reg and x and y locations to draw
+				case(counterG[2:0])
+				3'b000:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd92;
+					yellow[6]<=1'b1;
+					combined[6] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b001:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd76;
+					yellow[13]<=1'b1;
+					combined[13] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b010:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd60;
+					yellow[20]<=1'b1;
+					combined[20] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b011:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd44;
+					yellow[27]<=1'b1;
+					combined[27] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b100:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd28;
+					yellow[34]<=1'b1;
+					combined[34] <= 1'b1;
+					boardcounter <= boardcounter +1;
+				end
+				3'b101:
+				begin
+					colLocation<=8'd122;
+					rowLocation<=7'd12;
+					yellow[41]<=1'b1;
+					combined[41] <= 1'b1;
+					boardcounter <= boardcounter +1;
+					spotFull <= 1'b1;
+				end
+				endcase
+			end
+		end
+		
+
+		//counter register
+		else if (c_a)
+		begin
+			counterA<=counterA+1;
+		end
+		else if (c_b)
+		begin
+			counterB<=counterB+1;
+		end
+		else if (c_c)
+		begin
+			counterC<=counterC+1;
+			end
+		else if (c_d)
+		begin
+			counterD<=counterD+1;
+		end
+		else if (c_e)
+		begin
+			counterE<=counterE+1;
+		end
+		else if (c_f)
+		begin
+			counterF<=counterF+1;
+		end
+		else if (c_g)
+		begin
+			counterG<=counterG+1;
+		end
+	end
+
+//	always @(posedge clk)
+//	begin
+//		if (!resetn)
+//			boardcounter<=0;
+//		else if (!resetb)
+//			boardcounter<=0;
+//		else if(c_a+c_b+c_c+c_d+c_e+c_f+c_g)
+//			boardcounter<=boardcounter+1;
+//		end
+		
+		
+		
+		
+		
+		
+	//Assigning Board States for Red and Yellow
+	assign redBoard = red;
+	assign yellowBoard = yellow;
+	//Assigning Row and Column Coordinates
+	assign row=colLocation;
+	assign column=rowLocation;
+//	assign gameTieSignal = (&(red&yellow)==1'b1);
+	
+	/*assign gameTieSignal = ((red[0]+yellow[0]==1'b1) && (red[1]+yellow[1]==1'b1) && (red[2]+yellow[2]==1'b1) && (red[3]+yellow[3]==1'b1) && (red[4]+yellow[4]==1'b1)
+	 && (red[5]+yellow[5]==1'b1) && (red[6]+yellow[6]==1'b1) && (red[7]+yellow[7]==1'b1) && (red[8]+yellow[8]==1'b1) && (red[9]+yellow[9]==1'b1)
+	 && (red[10]+yellow[10]==1'b1) && (red[11]+yellow[11]==1'b1) && (red[12]+yellow[12]==1'b1) && (red[13]+yellow[13]==1'b1) && (red[14]+yellow[14]==1'b1)
+	 && (red[15]+yellow[15]==1'b1) && (red[16]+yellow[16]==1'b1) && (red[17]+yellow[17]==1'b1) && (red[18]+yellow[18]==1'b1) && (red[19]+yellow[19]==1'b1)
+	 && (red[20]+yellow[20]==1'b1) && (red[21]+yellow[21]==1'b1) && (red[22]+yellow[22]==1'b1) && (red[23]+yellow[23]==1'b1) && (red[24]+yellow[24]==1'b1)
+    && (red[25]+yellow[25]==1'b1) && (red[26]+yellow[26]==1'b1) && (red[27]+yellow[27]==1'b1) && (red[28]+yellow[28]==1'b1) && (red[29]+yellow[29]==1'b1)
+	 && (red[30]+yellow[30]==1'b1) && (red[31]+yellow[31]==1'b1) && (red[32]+yellow[32]==1'b1) && (red[33]+yellow[33]==1'b1) && (red[34]+yellow[34]==1'b1)		  
+	 && (red[35]+yellow[35]==1'b1) && (red[36]+yellow[36]==1'b1) && (red[37]+yellow[37]==1'b1) && (red[38]+yellow[38]==1'b1) && (red[39]+yellow[39]==1'b1)
+	&& (red[40]+yellow[40]==1'b1) && (red[41]+yellow[41]==1'b1));*/
+	
+	
+	
+	
+	
+	
+	
+	
+endmodule
