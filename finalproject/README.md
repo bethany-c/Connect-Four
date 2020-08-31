@@ -1,0 +1,1 @@
+This is the final project for this class in Verilog. The game is Tic-Tac-Toe and it is meant for 2 users to play. It involves taking a keyboard input from the user and displaying results on the VGA adapter.
